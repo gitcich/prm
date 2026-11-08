@@ -82,6 +82,12 @@ p{margin:0}
 .rail a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
 .rail a .n{margin-left:auto;font-family:var(--f-mono);font-size:.74rem;font-weight:400}
 .rail a .n.hot{background:var(--warn-soft);color:var(--warn);border-radius:99px;padding:0 7px}
+.rail a{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.rail.reordering{cursor:grabbing}.rail.reordering a{cursor:grabbing}
+.rail a.dragging{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);outline:2px solid var(--accent);position:relative;z-index:2}
+@media (prefers-reduced-motion:no-preference){.rail a.dragging{transform:scale(1.03)}}
+.rail .tabreset{align-self:flex-start;margin:6px 10px 0;border:0;background:none;padding:0;font:inherit;font-size:.78rem;color:var(--accent);text-decoration:underline;cursor:pointer}
+.rail .tabhint{padding:0 10px;font-size:.74rem;color:var(--muted);margin:2px 0 0}
 .rail hr{border:0;border-top:1px solid var(--line);margin:10px 0}
 .rail .chain{padding:4px 10px;font-size:.78rem;color:var(--muted);line-height:1.6}
 main{min-width:0;display:flex;flex-direction:column;gap:22px}
@@ -90,7 +96,8 @@ main{min-width:0;display:flex;flex-direction:column;gap:22px}
   .rail{position:static;flex-direction:row;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);padding-bottom:6px}
   .rail::-webkit-scrollbar{display:none}
   .rail a{white-space:nowrap;flex:none}
-  .rail hr,.rail .chain{display:none}
+  .rail hr,.rail .chain,.rail .tabhint{display:none}
+  .rail .tabreset{flex:none;margin:0 6px;white-space:nowrap;align-self:center}
   .brand small{display:none}
 }
 .manual{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 13px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--accent);font-weight:700;font-size:.9rem;text-decoration:none;white-space:nowrap;flex:none}
@@ -951,6 +958,7 @@ const roiTarget = () => Number(S.settings.program?.roiTarget) || 10;
 
 /* ---------- db ---------- */
 async function connect() {
+  loadTabOrder();
   const t = setTimeout(() => { if (S.status === 'connecting') { S.status = 'offline'; render(); } }, 10500);
   let db = null;
   try { db = await window.claude?.use?.('db'); } catch (e) { db = null; }
@@ -958,6 +966,7 @@ async function connect() {
   if (!db) { S.status = 'offline'; render(); return; }
   S.db = db; S.status = 'live';
   try { const u = await window.claude.use('user'); const c = u?.can?.('data.write'); if (c === false) S.canWrite = false; S.uid = await u?.id?.() || ''; try { const n = await u?.name?.(); if (n) S.uname = String(n).split(' ')[0]; } catch (x) {} } catch (e) {}
+  syncTabOrder();
   window.claude.use('sample').then(async f => { S.ai = f || null; try { const l = await f?.limits?.(); S.aiImages = !!(l && (l.images || l.maxImages)); } catch (x) {} schedule(); }).catch(() => {});
   window.claude.use('downloads').then(f => { S.dl = f || null; schedule(); }).catch(() => {});
   initMcp();
@@ -998,6 +1007,7 @@ let lastRoute = null;
 
 const SUBVIEWS = {'leads-accounts':'leads', 'leads-people':'leads', 'leads-import':'leads', 'leads-crm':'leads', 'dealreg-active':'dealreg', 'dealreg-all':'dealreg', 'dealreg-leads':'dealreg', portal:'dealreg', 'academy-learners':'academy', 'academy-certs':'academy', 'events-past':'events', brainstorm:'content', board:'pipeline', map:'partners', forecast:'pipeline', engagement:'pipeline'};
 function renderRail(cur) {
+  if (S.tabDrag) return;
   const view = VIEWS[cur] ? cur : SUBVIEWS[cur] || parentView[KIND_OF(cur)] || (cur.startsWith('preview-') ? 'academy' : '');
   const counts = {
     partners: Object.keys(S.partners).length, campaigns: Object.keys(S.campaigns).length, events: Object.keys(S.events).length,
@@ -1008,10 +1018,11 @@ function renderRail(cur) {
     leads: vals(S.leads || {}).filter(l => l.status === 'new').length,
     dealreg: vals(S.dealregs || {}).filter(r => r.status === 'submitted').length
   };
-  $('#rail').innerHTML = Object.entries(VIEWS).map(([k, v]) => {
+  const custom = (S.tabOrder || []).length > 0;
+  $('#rail').innerHTML = tabOrder().map(k => [k, VIEWS[k]]).map(([k, v]) => {
     const n = counts[k]; const hot = (k === 'attribution' || k === 'content' || k === 'academy' || k === 'leads' || k === 'dealreg') && n > 0;
-    return `<a href="#${k}" ${view === k ? 'aria-current="page"' : ''}><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="${v.icon}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>${v.label}${n != null && S.loaded ? `<span class="n${hot ? ' hot' : ''}" ${hot ? `title="${n} open deals have no marketing touch"` : ''}>${n}</span>` : ''}</a>`;
-  }).join('') + `<hr><div class="chain"><b style="color:var(--mdf)">MDF</b> funds a <b style="color:var(--camp)">campaign</b>, whose touches create and move <b style="color:var(--pipe)">pipeline</b>.</div>`;
+    return `<a href="#${k}" data-tab="${k}" draggable="false" title="Press and hold to move" ${view === k ? 'aria-current="page"' : ''}><svg width="18" height="18" viewBox="0 0 20 20" aria-hidden="true"><path d="${v.icon}" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>${v.label}${n != null && S.loaded ? `<span class="n${hot ? ' hot' : ''}" ${hot ? `title="${n} open deals have no marketing touch"` : ''}>${n}</span>` : ''}</a>`;
+  }).join('') + (custom ? `<button class="tabreset" data-act="tabreset" type="button">Reset tab order</button>` : '') + `<hr><div class="chain"><b style="color:var(--mdf)">MDF</b> funds a <b style="color:var(--camp)">campaign</b>, whose touches create and move <b style="color:var(--pipe)">pipeline</b>.</div><p class="tabhint">Press and hold a tab, then drag to reorder it.</p>`;
 }
 
 function renderInner() {
@@ -5032,6 +5043,78 @@ document.addEventListener('input', e => {
   else if (el.dataset?.ptdec) T.decline[el.dataset.ptdec] = el.value;
 });
 document.addEventListener('change', e => { const el = e.target; if (el.id === 'ptPartner') { const T = PT(); T.pid = el.value; T.done = null; T.f = {}; T.editId = ''; try { localStorage.setItem('pcc.portalPartner', el.value); } catch (x) {} render(); } else if (el.dataset?.ptf) { PT().f[el.dataset.ptf] = el.value; } });
+
+/* ---------- tab order: press and hold a tab, then drag it ---------- */
+const TAB_KEY = 'pcc.tabOrder';
+function tabOrder() {
+  const keys = Object.keys(VIEWS), saved = (S.tabOrder || []).filter(k => VIEWS[k]);
+  return [...saved, ...keys.filter(k => !saved.includes(k))];
+}
+function loadTabOrder() {
+  try { const t = JSON.parse(localStorage.getItem(TAB_KEY) || 'null'); if (Array.isArray(t)) S.tabOrder = t; } catch (e) {}
+}
+async function syncTabOrder() {
+  if (!S.db || !S.uid) return;
+  try { const d = await S.db.doc('data/users/' + S.uid + '/prefs').get(); const t = d?.exists ? d.data()?.tabOrder : null; if (Array.isArray(t) && t.join() !== (S.tabOrder || []).join()) { S.tabOrder = t; try { localStorage.setItem(TAB_KEY, JSON.stringify(t)); } catch (e) {} schedule(); } } catch (e) {}
+}
+function saveTabOrder(order, msg) {
+  S.tabOrder = order;
+  try { order ? localStorage.setItem(TAB_KEY, JSON.stringify(order)) : localStorage.removeItem(TAB_KEY); } catch (e) {}
+  if (S.db && S.uid) S.db.doc('data/users/' + S.uid + '/prefs').set({tabOrder:order || [], updatedAt:now()}).catch(() => {});
+  if (msg) toast(msg);
+}
+const TD = {timer:0, el:null, start:null, active:false, horiz:false, pid:null, suppress:false};
+const railLinks = () => [...document.querySelectorAll('#rail a[data-tab]')];
+function tdEnd(commit) {
+  clearTimeout(TD.timer); TD.timer = 0;
+  if (!TD.active) { TD.el = null; return; }
+  const rail = $('#rail'); rail.classList.remove('reordering');
+  TD.el.classList.remove('dragging'); TD.el.style.transform = '';
+  const order = railLinks().map(a => a.dataset.tab);
+  TD.active = false; S.tabDrag = false; TD.el = null; TD.suppress = true; setTimeout(() => { TD.suppress = false; }, 350);
+  if (commit && order.join() !== tabOrder().join()) saveTabOrder(order, 'Tab order saved. Press and hold a tab to move it again.');
+  render();
+}
+document.addEventListener('pointerdown', e => {
+  const a = e.target.closest('#rail a[data-tab]'); if (!a || e.button > 0) return;
+  TD.el = a; TD.start = {x:e.clientX, y:e.clientY}; TD.pid = e.pointerId;
+  TD.timer = setTimeout(() => {
+    TD.active = true; S.tabDrag = true;
+    const rail = $('#rail'); TD.horiz = getComputedStyle(rail).flexDirection === 'row';
+    rail.classList.add('reordering'); a.classList.add('dragging');
+    try { a.setPointerCapture(TD.pid); } catch (x) {}
+    if (navigator.vibrate) try { navigator.vibrate(15); } catch (x) {}
+  }, e.pointerType === 'mouse' ? 280 : 420);
+});
+document.addEventListener('pointermove', e => {
+  if (!TD.el || e.pointerId !== TD.pid) return;
+  if (!TD.active) { if (Math.hypot(e.clientX - TD.start.x, e.clientY - TD.start.y) > 8) { clearTimeout(TD.timer); TD.el = null; } return; }
+  e.preventDefault();
+  const rail = $('#rail'), links = railLinks().filter(x => x !== TD.el);
+  const pos = TD.horiz ? e.clientX : e.clientY;
+  let before = null;
+  for (const x of links) { const r = x.getBoundingClientRect(), mid = TD.horiz ? r.left + r.width / 2 : r.top + r.height / 2; if (pos < mid) { before = x; break; } }
+  const last = railLinks().pop();
+  if (before) { if (TD.el.nextElementSibling !== before) rail.insertBefore(TD.el, before); }
+  else if (last !== TD.el) last.after(TD.el);
+  if (TD.horiz) { const r = rail.getBoundingClientRect(); if (e.clientX < r.left + 30) rail.scrollLeft -= 12; else if (e.clientX > r.right - 30) rail.scrollLeft += 12; }
+}, {passive:false});
+document.addEventListener('touchmove', e => { if (TD.active) e.preventDefault(); }, {passive:false});
+document.addEventListener('pointerup', e => { if (TD.el && e.pointerId === TD.pid) tdEnd(true); });
+document.addEventListener('pointercancel', e => { if (TD.el && e.pointerId === TD.pid) tdEnd(false); });
+document.addEventListener('click', e => { if ((TD.suppress || TD.active) && e.target.closest('#rail a[data-tab]')) { e.preventDefault(); e.stopPropagation(); } }, true);
+document.addEventListener('contextmenu', e => { if ((TD.timer || TD.active) && e.target.closest('#rail a[data-tab]')) e.preventDefault(); });
+document.addEventListener('dragstart', e => { if (e.target.closest?.('#rail')) e.preventDefault(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && TD.active) { clearTimeout(TD.timer); TD.active = false; S.tabDrag = false; TD.el = null; $('#rail').classList.remove('reordering'); render(); return; }
+  const a = e.target.closest?.('#rail a[data-tab]'); if (!a || !e.altKey || !e.shiftKey) return;
+  const dir = {ArrowUp:-1, ArrowLeft:-1, ArrowDown:1, ArrowRight:1}[e.key]; if (!dir) return;
+  e.preventDefault();
+  const order = tabOrder(), i = order.indexOf(a.dataset.tab), j = i + dir; if (j < 0 || j >= order.length) return;
+  [order[i], order[j]] = [order[j], order[i]]; saveTabOrder(order, `${VIEWS[order[j]].label} moved ${dir < 0 ? 'up' : 'down'}`); render();
+  setTimeout(() => $(`#rail a[data-tab="${order[j]}"]`)?.focus(), 0);
+});
+document.addEventListener('click', e => { if (e.target.closest('[data-act="tabreset"]')) { saveTabOrder(null, 'Tabs back in their original order'); render(); } });
 
 /* ---------- contextual help ---------- */
 const MANUAL = 'https://claude.ai/artifact/BQqigB6NVNxADuigEhvyd4';
