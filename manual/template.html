@@ -1,0 +1,600 @@
+<title>Partner Command Center Manual</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a field manual — masthead band, sticky chapter index on the left, one reading column; each walkthrough is a real screenshot with numbered pins that pair with the numbered notes below it. Plum matches the hub's accent; amber/plum/teal repeat the hub's MDF → campaign → pipeline colours. */
+:root{
+  --bg:#F5F5F8; --surface:#FFFFFF; --surface-2:#ECEDF2; --ink:#1B1D2A; --muted:#5B6074; --line:#DADCE5;
+  --accent:#6A2C70; --accent-ink:#FFFFFF; --accent-soft:#F1E4F1;
+  --mdf:#A85A12; --mdf-soft:#F8EAD9; --camp:#6A2C70; --camp-soft:#F1E4F1; --pipe:#13707F; --pipe-soft:#DDF0F2;
+  --ok:#24784A; --warn:#966008; --warn-soft:#F8ECD3; --bad:#B23A30;
+  --pin:#6A2C70; --pin-ink:#FFFFFF; --pin-ring:#FFFFFF; --hl:rgba(106,44,112,.16);
+  --shadow:0 12px 40px rgba(27,29,42,.18);
+  --f-display:"Familjen Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12131B; --surface:#1A1C27; --surface-2:#232633; --ink:#E6E7EE; --muted:#9CA1B4; --line:#2E3242;
+  --accent:#D49ADB; --accent-ink:#1A0F1C; --accent-soft:#3A2240;
+  --mdf:#E9A35C; --mdf-soft:#3A2814; --camp:#D49ADB; --camp-soft:#3A2240; --pipe:#5FC4D2; --pipe-soft:#133238;
+  --ok:#6CCB93; --warn:#E6BA5E; --warn-soft:#352A12; --bad:#F08A80;
+  --pin:#8E3A96; --pin-ink:#FFFFFF; --pin-ring:#FFFFFF; --hl:rgba(142,58,150,.20);
+  --shadow:0 12px 40px rgba(0,0,0,.55); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12131B; --surface:#1A1C27; --surface-2:#232633; --ink:#E6E7EE; --muted:#9CA1B4; --line:#2E3242;
+  --accent:#D49ADB; --accent-ink:#1A0F1C; --accent-soft:#3A2240;
+  --mdf:#E9A35C; --mdf-soft:#3A2814; --camp:#D49ADB; --camp-soft:#3A2240; --pipe:#5FC4D2; --pipe-soft:#133238;
+  --ok:#6CCB93; --warn:#E6BA5E; --warn-soft:#352A12; --bad:#F08A80;
+  --pin:#8E3A96; --pin-ink:#FFFFFF; --pin-ring:#FFFFFF; --hl:rgba(142,58,150,.20);
+  --shadow:0 12px 40px rgba(0,0,0,.55); color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(16px + env(safe-area-inset-top,0px))}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.6}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+h1,h2,h3,h4{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em;line-height:1.2}
+p{margin:0}
+b,strong{font-weight:700}
+kbd{font-family:var(--f-mono);font-size:.78em;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface);white-space:nowrap}
+.ico{font-family:var(--f-mono);font-size:.85em}
+.num-t{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+
+/* masthead */
+.mast{background:var(--surface);border-bottom:1px solid var(--line)}
+.mast-in{max-width:1240px;margin:0 auto;padding-block:40px 34px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px 40px;align-items:end}
+.mast .kicker{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mast h1{font-size:clamp(2rem,4.5vw,3.1rem);font-weight:700;margin-top:8px}
+.mast .lede{margin-top:12px;max-width:62ch;color:var(--muted);font-size:1.08rem}
+.mast .cta{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.btn{display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px;border-radius:9px;font-weight:700;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:hover{filter:brightness(1.05)}
+.meta{font-size:.84rem;color:var(--muted)}
+@media (max-width:760px){.mast-in{grid-template-columns:minmax(0,1fr)}}
+
+/* shell */
+.shell{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px;padding-block:36px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.toc{position:sticky;top:calc(20px + env(safe-area-inset-top,0px));align-self:start;max-height:calc(100vh - 40px);overflow-y:auto}
+.toc .lbl{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:block}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;counter-reset:ch}
+.toc a{display:grid;grid-template-columns:26px minmax(0,1fr);gap:6px;padding:6px 8px;border-radius:7px;text-decoration:none;color:var(--muted);font-size:.92rem;line-height:1.35}
+.toc a::before{counter-increment:ch;content:counter(ch,decimal-leading-zero);font-family:var(--f-mono);font-size:.74rem;padding-top:2px}
+.toc a:hover{background:var(--surface-2);color:var(--ink)}
+.toc a[aria-current="true"]{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.toc-m{display:none}
+@media (max-width:980px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:20px}
+  .toc{display:none}
+  .toc-m{display:block;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 14px}
+  .toc-m summary{cursor:pointer;font-weight:700;padding:10px 0}
+  .toc-m ol{margin:0 0 12px;padding-left:22px;columns:2;column-gap:24px}
+  .toc-m li{break-inside:avoid;padding:2px 0}
+}
+@media (max-width:520px){.toc-m ol{columns:1}}
+
+main{min-width:0;display:flex;flex-direction:column;gap:64px}
+section.ch{display:flex;flex-direction:column;gap:22px;min-width:0}
+.ch-head{display:flex;flex-direction:column;gap:6px;border-top:2px solid var(--ink);padding-top:14px}
+.ch-head .no{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.06em;color:var(--muted)}
+.ch-head h2{font-size:clamp(1.55rem,2.6vw,2rem);font-weight:700}
+.prose{display:flex;flex-direction:column;gap:14px;max-width:68ch}
+.prose ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+h3{font-size:1.2rem;font-weight:700;margin-top:6px}
+
+/* walkthrough figure */
+figure.walk{margin:0;display:flex;flex-direction:column;gap:12px;min-width:0}
+.shot-wrap{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px}
+.shot{position:relative;border-radius:6px;overflow:visible;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.shot img{display:block;width:100%;height:auto;max-width:100%;border-radius:6px;background:#F4F5F8}
+figure.phone .shot-wrap{max-width:360px}
+.hl{position:absolute;border:2px solid var(--pin);border-radius:6px;opacity:.55;pointer-events:none;transition:opacity .15s,background-color .15s}
+.hl.on{opacity:1;background:var(--hl)}
+.pin{position:absolute;transform:translate(-40%,-40%);width:28px;height:28px;border-radius:50%;background:var(--pin);color:var(--pin-ink);border:2px solid var(--pin-ring);font-family:var(--f-display);font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.3);padding:0;z-index:2}
+.pin.out{transform:translate(-112%,-20%)}
+.pin.on,.pin:hover{transform:translate(-40%,-40%) scale(1.15)}
+.pin.out.on,.pin.out:hover{transform:translate(-112%,-20%) scale(1.15)}
+@media (max-width:600px){.pin{width:22px;height:22px;font-size:.75rem}}
+.zoom{position:absolute;right:8px;bottom:8px;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:zoom-in;z-index:3;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+figcaption{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;font-weight:700;font-family:var(--f-display);font-size:1.02rem}
+figcaption .fn{font-family:var(--f-mono);font-weight:500;font-size:.78rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.open{font-family:var(--f-body);font-weight:700;font-size:.86rem;text-decoration:none;white-space:nowrap}
+.open:hover{text-decoration:underline}
+.callouts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 22px}
+@media (max-width:760px){.callouts{grid-template-columns:minmax(0,1fr)}}
+.callouts li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;padding:9px 10px;border-radius:9px;transition:background-color .15s;cursor:default}
+.callouts li.on{background:var(--accent-soft)}
+.callouts .num{width:24px;height:24px;border-radius:50%;background:var(--pin);color:var(--pin-ink);font-family:var(--f-display);font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.callouts li > div > b{display:block;font-family:var(--f-display);font-size:1rem}
+.callouts p{color:var(--muted);font-size:.94rem;margin-top:2px}
+
+/* how-to boxes */
+.task{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;max-width:820px}
+.task h4{font-size:1.06rem;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
+.tag{font-family:var(--f-mono);font-size:.7rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;background:var(--pipe-soft);color:var(--pipe);border-radius:4px;padding:1px 7px}
+.steps{margin:0;padding:0;list-style:none;counter-reset:st;display:flex;flex-direction:column;gap:10px}
+.steps li{counter-increment:st;display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px}
+.steps li::before{content:counter(st);width:26px;height:26px;border-radius:7px;border:1.5px solid var(--pipe);color:var(--pipe);font-family:var(--f-mono);font-size:.82rem;display:flex;align-items:center;justify-content:center}
+
+/* notes, tables */
+.note{border-radius:10px;padding:14px 16px;background:var(--warn-soft);font-size:.95rem;max-width:820px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px}
+.note.info{background:var(--pipe-soft)}
+.note b.k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding-top:3px;white-space:nowrap}
+.tw{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.r,th.r{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-family:var(--f-mono);font-size:.72rem;border-radius:4px;padding:1px 7px;font-weight:500;white-space:nowrap}
+.chip.mdf{background:var(--mdf-soft);color:var(--mdf)} .chip.camp{background:var(--camp-soft);color:var(--camp)} .chip.pipe{background:var(--pipe-soft);color:var(--pipe)} .chip.hub{background:var(--surface-2);color:var(--ink)}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.cols3{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h4{font-size:1.02rem}
+.card p{color:var(--muted);font-size:.93rem}
+.card ul{margin:0;padding-left:18px;font-size:.93rem;display:flex;flex-direction:column;gap:4px}
+
+/* diagram */
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto}
+.diagram svg{display:block;width:100%;min-width:620px;height:auto}
+.diagram text{font-family:var(--f-body);fill:var(--ink)}
+.diagram .t-k{font-family:var(--f-mono);font-size:11px;fill:var(--muted);letter-spacing:.06em}
+.diagram .t-n{font-family:var(--f-display);font-weight:700;font-size:16px}
+.diagram .t-s{font-size:12.5px;fill:var(--muted)}
+.diagram .edge{stroke:var(--muted);stroke-width:1.6;fill:none}
+.diagram .edge.dash{stroke-dasharray:5 4}
+.diagram .credit{stroke:var(--pipe);stroke-width:2.2;fill:none}
+
+dl.gloss{display:grid;grid-template-columns:minmax(150px,220px) minmax(0,1fr);gap:0;margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+dl.gloss dt,dl.gloss dd{padding:11px 16px;border-bottom:1px solid var(--line);margin:0}
+dl.gloss dt{font-family:var(--f-display);font-weight:700}
+dl.gloss dd{color:var(--muted)}
+dl.gloss dt:last-of-type,dl.gloss dd:last-of-type{border-bottom:0}
+@media (max-width:600px){dl.gloss{grid-template-columns:minmax(0,1fr)}dl.gloss dt{border-bottom:0;padding-bottom:0}}
+
+details.faq{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:0 16px;max-width:820px}
+details.faq summary{cursor:pointer;font-weight:700;padding:13px 0;font-family:var(--f-display);font-size:1.02rem}
+details.faq div{padding:0 0 14px;color:var(--muted);display:flex;flex-direction:column;gap:8px}
+.faqs{display:flex;flex-direction:column;gap:8px}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:50;background:rgba(10,12,18,.82);display:flex;flex-direction:column;
+  padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.lb-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#fff;padding:4px 4px 10px;font-family:var(--f-display);font-weight:700}
+.lb-bar button{height:38px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.4);background:transparent;color:#fff;font:inherit;cursor:pointer}
+.lb-scroll{flex:1;overflow:auto;border-radius:8px;background:#F4F5F8}
+.lb-scroll img{display:block;width:100%;min-width:900px;max-width:none;height:auto}
+.lb-scroll.phone img{min-width:0;max-width:420px;margin:0 auto}
+[id]{scroll-margin-top:calc(24px + env(safe-area-inset-top,0px))}
+.flash{animation:flash 2.4s ease-out 1}
+@keyframes flash{0%,35%{box-shadow:0 0 0 3px var(--accent);background-color:var(--accent-soft)}100%{box-shadow:0 0 0 3px transparent}}
+@media (prefers-reduced-motion:reduce){.hl,.callouts li,.pin{transition:none}.flash{animation:none;box-shadow:0 0 0 3px var(--accent)}}
+.end{color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<header class="mast">
+  <div class="mast-in">
+    <div>
+      <span class="kicker">User manual · Version 1 · October 2026</span>
+      <h1>Partner Command Center</h1>
+      <p class="lede">How to run your partner program from one place: find any partner, deal or MDF line in seconds, see what every MDF dollar produced, and keep pipeline, forecast and partner engagement in view.</p>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="{{HUB}}" target="_blank" rel="noopener">Open the hub <span aria-hidden="true">↗</span></a>
+      <span class="meta">For partner account managers · 15-minute read</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" aria-label="Chapters">
+    <span class="lbl">Chapters</span>
+    <ol id="toc">
+      <li><a href="#start">Start here</a></li>
+      <li><a href="#model">How it fits together</a></li>
+      <li><a href="#nav">Getting around</a></li>
+      <li><a href="#partners">Partners</a></li>
+      <li><a href="#leads">Leads and accounts</a></li>
+      <li><a href="#dealreg">Deal registration</a></li>
+      <li><a href="#mdf">MDF</a></li>
+      <li><a href="#campaigns">Campaigns and events</a></li>
+      <li><a href="#content">Content studio</a></li>
+      <li><a href="#plan">Business plan</a></li>
+      <li><a href="#academy">Academy</a></li>
+      <li><a href="#deals">Deals and touches</a></li>
+      <li><a href="#attribution">Attribution</a></li>
+      <li><a href="#pipeline">Pipeline tabs</a></li>
+      <li><a href="#tools">Tools directory</a></li>
+      <li><a href="#routines">Weekly routines</a></li>
+      <li><a href="#help">Troubleshooting</a></li>
+      <li><a href="#glossary">Glossary</a></li>
+    </ol>
+  </nav>
+
+  <main id="main">
+    <details class="toc-m"><summary>Chapters</summary><ol>
+      <li><a href="#start">Start here</a></li><li><a href="#model">How it fits together</a></li><li><a href="#nav">Getting around</a></li><li><a href="#partners">Partners</a></li><li><a href="#leads">Leads and accounts</a></li><li><a href="#dealreg">Deal registration</a></li><li><a href="#mdf">MDF</a></li><li><a href="#campaigns">Campaigns and events</a></li><li><a href="#content">Content studio</a></li><li><a href="#plan">Business plan</a></li><li><a href="#academy">Academy</a></li><li><a href="#deals">Deals and touches</a></li><li><a href="#attribution">Attribution</a></li><li><a href="#pipeline">Pipeline tabs</a></li><li><a href="#tools">Tools directory</a></li><li><a href="#routines">Weekly routines</a></li><li><a href="#help">Troubleshooting</a></li><li><a href="#glossary">Glossary</a></li>
+    </ol></details>
+
+    <section class="ch" id="start" aria-labelledby="h-start">
+      <div class="ch-head"><span class="no">Chapter 01</span><h2 id="h-start">Start here</h2></div>
+      <div class="prose">
+        <p>Partner Command Center is where you run the partner program. Partner lifecycle, MDF requests and claims, campaigns and events are managed right here. Deals and contacts come from the <a href="{{PORTAL}}" target="_blank" rel="noopener">Partner Pipeline Portal</a>. Touch logs come from the <a href="{{DESK}}" target="_blank" rel="noopener">Partner Engagement Desk</a>. The hub links all of it, so you can click from an MDF request to the campaign it paid for to the deals that campaign touched, and back again.</p>
+        <p>Each screenshot in this manual has numbered pins. The notes under it use the same numbers. Hover or tap a pin to highlight its note, and use the magnifier in the corner to see the screenshot full size.</p>
+      </div>
+      <div class="cols3">
+        <div class="card"><h4>Every record has a page</h4><p>Partners, MDF requests, campaigns, events, deals and contacts each open on their own page, with their own link you can bookmark or share.</p></div>
+        <div class="card"><h4>Colour tells you what a link is</h4><p><span class="chip mdf">amber</span> MDF and events, <span class="chip camp">plum</span> campaigns, <span class="chip pipe">teal</span> deals and pipeline. A <span class="ico">↗</span> arrow means the link opens another tool in a new tab.</p></div>
+        <div class="card"><h4>Examples are labelled</h4><p>Records tagged <span class="chip hub">example</span> are sample data so you can see how everything connects. Your real program replaces them.</p></div>
+      </div>
+    </section>
+
+    <section class="ch" id="model" aria-labelledby="h-model">
+      <div class="ch-head"><span class="no">Chapter 02</span><h2 id="h-model">How it fits together</h2></div>
+      <div class="prose"><p>Attribution in the hub rests on one idea: a <b>touch</b>. A touch is a dated record that a deal was reached by an event, a campaign or an MDF-funded activity. Each touch traces back through the chain below, so the deal’s value can be credited to the campaign and the MDF that paid for it.</p></div>
+      <div class="diagram" role="img" aria-label="Diagram: an MDF request funds a campaign, a campaign includes events, and each touch on a deal points at one event, campaign or MDF activity. Credit flows from the deal back up to the campaign and the MDF.">
+        <svg viewBox="0 0 760 330" aria-hidden="true">
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+            <marker id="arc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--pipe)"/></marker>
+          </defs>
+          <rect x="20" y="24" width="190" height="72" rx="10" fill="var(--mdf-soft)" stroke="var(--mdf)" stroke-width="1.5"/>
+          <text class="t-k" x="36" y="46">MDF REQUEST</text><text class="t-n" x="36" y="68">Telemarketing sprint</text><text class="t-s" x="36" y="86">$7,500 · Paid</text>
+          <rect x="285" y="24" width="190" height="72" rx="10" fill="var(--camp-soft)" stroke="var(--camp)" stroke-width="1.5"/>
+          <text class="t-k" x="301" y="46">CAMPAIGN</text><text class="t-n" x="301" y="68">DR modernization</text><text class="t-s" x="301" y="86">spend = linked MDF</text>
+          <rect x="550" y="24" width="190" height="72" rx="10" fill="var(--mdf-soft)" stroke="var(--mdf)" stroke-width="1.5"/>
+          <text class="t-k" x="566" y="46">EVENT</text><text class="t-n" x="566" y="68">Boston roundtable</text><text class="t-s" x="566" y="86">paid by its own MDF</text>
+          <path class="edge" d="M210 60 H281" marker-end="url(#ar)"/><text class="t-s" x="226" y="52">funds</text>
+          <path class="edge" d="M475 60 H546" marker-end="url(#ar)"/><text class="t-s" x="489" y="52">includes</text>
+          <rect x="285" y="160" width="190" height="56" rx="10" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="1.5"/>
+          <text class="t-k" x="301" y="182">TOUCH · DATED</text><text class="t-n" x="301" y="204">points at one of ↑</text>
+          <path class="edge dash" d="M330 160 L140 100" marker-end="url(#ar)"/>
+          <path class="edge dash" d="M380 160 V100" marker-end="url(#ar)"/>
+          <path class="edge dash" d="M430 160 L620 100" marker-end="url(#ar)"/>
+          <rect x="285" y="252" width="190" height="62" rx="10" fill="var(--pipe-soft)" stroke="var(--pipe)" stroke-width="1.5"/>
+          <text class="t-k" x="301" y="274">DEAL</text><text class="t-n" x="301" y="296">Three Rivers Steel</text><text class="t-s" x="301" y="310">$86,000 · Qualified</text>
+          <path class="edge" d="M380 252 V220" marker-end="url(#ar)"/><text class="t-s" x="388" y="240">has many touches</text>
+          <path class="credit" d="M285 283 C150 283 110 200 110 104" marker-end="url(#arc)"/>
+          <text x="20" y="200" style="font-size:12.5px;fill:var(--pipe);font-weight:700">credit flows back:</text>
+          <text x="20" y="216" style="font-size:12.5px;fill:var(--pipe)">deal value × model share</text>
+          <path class="credit" d="M475 283 C610 283 650 200 650 104" marker-end="url(#arc)"/>
+        </svg>
+      </div>
+      <h3 id="where">Where things live</h3>
+      <div class="prose"><p>The hub owns the program records. Deals, contacts and touch cadence still come from the two source tools. The table shows where to make each kind of change.</p></div>
+      <div class="tw"><table>
+        <thead><tr><th>What</th><th>Change it in</th><th>What the hub adds</th></tr></thead>
+        <tbody>
+          <tr><td>Partner lifecycle, tier, MDF requests, approvals and claims, campaigns, joint messaging, events and run sheets, co-branded content, shared accounts, leads and deal registrations</td><td><span class="chip hub">The hub</span></td><td>Everything, end to end. Channel Alignment is no longer needed</td></tr>
+          <tr><td>Deals, amounts, close dates, partner contacts</td><td><span class="chip pipe">Pipeline Portal</span></td><td>Touches on each deal, sourced or influenced, credit by model; Board, Forecast and Engagement tabs; the partner contact map</td></tr>
+          <tr><td>Touch cadence and the monthly partner brief</td><td><span class="chip camp">Engagement Desk</span></td><td>Engagement scores that combine Desk and Portal activity</td></tr>
+          <tr><td>Touches, attribution model, return target, quarterly forecast targets</td><td><span class="chip hub">The hub</span></td><td>These exist only in the hub</td></tr>
+        </tbody></table></div>
+      <div class="note"><b class="k">Note</b><p>Changes made in the Pipeline Portal and Engagement Desk don’t flow into the hub automatically, and changes in the hub don’t flow back. When the source tools have moved on, ask Claude in this project to refresh the hub’s copy.</p></div>
+    </section>
+
+    <section class="ch" id="nav" aria-labelledby="h-nav">
+      <div class="ch-head"><span class="no">Chapter 03</span><h2 id="h-nav">Getting around</h2></div>
+      <div class="prose"><p>Home is your starting point every morning. The side rail takes you to each area. Search reaches any single record in a couple of keystrokes.</p></div>
+      {{FIG:home}}
+      {{FIG:search}}
+      <div class="cols3">
+        <div class="card"><h4>Keyboard</h4><ul><li><kbd>/</kbd> jump to search</li><li><kbd>↑</kbd> <kbd>↓</kbd> move through results</li><li><kbd>Enter</kbd> open, <kbd>Esc</kbd> close</li><li><kbd>Tab</kbd> reaches every control, with a visible focus ring</li></ul></div>
+        <div class="card"><h4>Links you can share</h4><p>Every page has its own address. Copy it from the address bar to send someone straight to a partner, a deal or the Attribution page. They need access to the hub to open it.</p></div>
+        <div class="card"><h4>Back works</h4><p>Breadcrumbs at the top of each page lead back up, and the browser’s Back button returns you to where you were.</p></div>
+      </div>
+      {{FIG:mobile}}
+      <h3 id="focus">Focus on one partner</h3>
+      <div class="prose"><p>When you’re working one account, pick it in the <b>Partner account</b> box on Home. Every tab then shows only that partner’s MDF, campaigns, events, content, deals, contacts and attribution, until you clear it.</p></div>
+      {{FIG:focus}}
+      {{STEPS:focus}}
+    </section>
+
+    <section class="ch" id="partners" aria-labelledby="h-partners">
+      <div class="ch-head"><span class="no">Chapter 04</span><h2 id="h-partners">Partners</h2></div>
+      <div class="prose"><p>Partners has two tabs. <b>List</b> shows every partner with tier, lifecycle progress, MDF used, open pipeline, attributed pipeline and the pipeline they reported. Click a column heading to sort by it, or open a partner for the full picture. <b>Map</b> shows every partner contact by city.</p></div>
+      {{FIG:partners}}
+      {{FIG:partner}}
+      <h3 id="lifecycle">Lifecycle</h3>
+      <div class="prose"><p>Every partner moves through Recruit, Onboard, Enable, Activate and Grow. Each stage has four checklist items, from a signed NDA to a joint customer reference.</p></div>
+      {{FIG:lifecycle}}
+      {{STEPS:advance}}
+      <h3 id="map">Map</h3>
+      {{FIG:map}}
+      {{FIG:maprec}}
+      {{STEPS:territory}}
+      <h3 id="import">Importing contacts</h3>
+      {{FIG:imp}}
+      {{STEPS:import}}
+    </section>
+
+    <section class="ch" id="leads" aria-labelledby="h-leads">
+      <div class="ch-head"><span class="no">Chapter 05</span><h2 id="h-leads">Leads and accounts</h2></div>
+      <div class="prose"><p>Leads &amp; accounts is where you and your partners map the companies you share, decide who leads each one, and route leads between you. It has five tabs: <b>Account mapping</b>, <b>Accounts</b>, <b>Leads</b>, <b>Import</b> and <b>CRM connections</b>.</p>
+      <p>Every account records your own relationship (customer, open opportunity, prospect or not engaged) and each mapped partner’s. Comparing the two gives the <b>overlap</b>, which tells you the move to make.</p></div>
+      {{FIG:leadmap}}
+      {{FIG:account}}
+      {{STEPS:mapaccount}}
+      <h3 id="leadrouting">Leads</h3>
+      {{FIG:lead}}
+      {{STEPS:routelead}}
+      <h3 id="leadimport">Importing</h3>
+      {{FIG:leadimport}}
+      {{STEPS:importlist}}
+      <h3 id="crmsync">CRM connections</h3>
+      {{FIG:crm}}
+      {{STEPS:syncnotion}}
+      {{STEPS:pullapollo}}
+      <div class="note info"><b class="k">Note</b><p>Connections run with your own claude.ai connectors and ask your permission the first time. Notion and Apollo.io are connected today. Salesforce and HubSpot need their connectors added in claude.ai Settings → Connectors first; until then, use their CSV exports with Import.</p></div>
+    </section>
+
+    <section class="ch" id="dealreg" aria-labelledby="h-dealreg">
+      <div class="ch-head"><span class="no">Chapter 06</span><h2 id="h-dealreg">Deal registration</h2></div>
+      <div class="prose"><p>Partners register the deals they find so they’re protected from channel conflict, and accept or decline the leads you send them. Both happen in the <b>partner portal</b>; you review, decide and track in the hub.</p></div>
+      {{FIG:regqueue}}
+      {{FIG:reg}}
+      {{STEPS:reviewreg}}
+      <h3 id="portal">The partner portal</h3>
+      {{FIG:portal}}
+      {{FIG:portalreg}}
+      {{STEPS:partnerportal}}
+      <div class="note"><b class="k">Note</b><p>Partners don’t have their own login. Anyone you share the hub with can open the portal and choose a company, so share it only with partner contacts you trust. Per-partner sign-in needs a system such as Salesforce Experience Cloud.</p></div>
+      <h3 id="acceptance">Lead acceptance</h3>
+      {{FIG:accept}}
+    </section>
+
+    <section class="ch" id="mdf" aria-labelledby="h-mdf">
+      <div class="ch-head"><span class="no">Chapter 07</span><h2 id="h-mdf">MDF</h2></div>
+      <div class="prose"><p>Every market development fund request, from the partner’s ask through approval, claim and payment, the campaign it pays for, and what it returned.</p></div>
+      {{FIG:mdflist}}
+      {{FIG:mdf}}
+      {{STEPS:approvemdf}}
+      {{STEPS:linkmdf}}
+    </section>
+
+    <section class="ch" id="campaigns" aria-labelledby="h-campaigns">
+      <div class="ch-head"><span class="no">Chapter 08</span><h2 id="h-campaigns">Campaigns and events</h2></div>
+      <div class="prose"><p>A campaign’s spend is the total of the MDF requests linked to it. Its pipeline is the credit earned by every touch that traces back to it, including touches on its events.</p></div>
+      {{FIG:campaign}}
+      {{STEPS:newcampaign}}
+      <h3 id="events">Events</h3>
+      <div class="prose"><p>Events has two tabs: <b>Upcoming</b>, soonest first, and <b>Past</b>, most recent first. Every event page carries a run sheet, results, funding and an AI-drafted plan.</p></div>
+      {{FIG:newevent}}
+      {{FIG:runsheet}}
+      {{STEPS:planevent}}
+      {{FIG:event}}
+      {{STEPS:reconcile}}
+    </section>
+
+    <section class="ch" id="content" aria-labelledby="h-content">
+      <div class="ch-head"><span class="no">Chapter 09</span><h2 id="h-content">Content studio</h2></div>
+      <div class="prose"><p>The Content studio is where co-branded content gets made: brainstorm ideas with Claude, write and design each piece, assign it to a partner account and one or more campaigns, and take it through review, approval, scheduling and publishing. The vendor and the partner both sign off before anything goes out.</p></div>
+      {{FIG:content}}
+      <h3>Brainstorm</h3>
+      {{FIG:brainstorm}}
+      {{STEPS:brainstorm}}
+      <h3>Create and approve</h3>
+      {{FIG:asset}}
+      {{STEPS:create}}
+      {{STEPS:approve}}
+      <div class="note info"><b class="k">AI</b><p>AI writing and design use your own Claude account, and the first request asks you to allow it. Everything also works by hand: the brand template draws a finished graphic from your headline, subhead and call to action without AI.</p></div>
+    </section>
+
+    <section class="ch" id="plan" aria-labelledby="h-plan">
+      <div class="ch-head"><span class="no">Chapter 10</span><h2 id="h-plan">Business plan</h2></div>
+      <div class="prose"><p>Each partner has one joint business plan: why the partnership exists, a step-by-step onboarding and enablement playbook, goals that track themselves from the hub’s data, a brand guide, and ready-to-use logo graphics. A plan assistant sits beside it. You can ask it questions, attach files, or ask it to update the plan, and you approve every change it proposes.</p>
+      <p>Open <b>Business plan</b> in the side rail, or select <b>Business plan</b> on any partner page. When you’ve focused the hub on one partner, the plan opens on that partner. Otherwise, use the <b>Partner</b> menu at the top right.</p></div>
+      {{FIG:plan}}
+      {{STEPS:plansteps}}
+      {{STEPS:plangoal}}
+      <h3>The plan assistant</h3>
+      {{FIG:planchat}}
+      {{STEPS:planchat}}
+      {{STEPS:planupload}}
+      <div class="note info"><b class="k">AI</b><p>The assistant uses your own Claude account and asks your permission the first time. It never changes the plan by itself: proposed changes wait in a card until you select <b>Apply</b>. Text files (TXT, CSV, Markdown, JSON) can be read by the assistant; images can be shown to it when your view allows; other files are stored with the plan but not read.</p></div>
+    </section>
+
+    <section class="ch" id="academy" aria-labelledby="h-academy">
+      <div class="ch-head"><span class="no">Chapter 11</span><h2 id="h-academy">Academy</h2></div>
+      <div class="prose"><p>The Academy is the hub's learning system. Build courses from reading, video, file and quiz lessons (or have Claude draft them), assign them to partner contacts with due dates, record progress lesson by lesson, grade quizzes, and award certifications with downloadable certificates. Certifications feed each partner's business plan and goals.</p>
+      <p>Partners don't log in to the hub, so progress is recorded here: you open an assignment and work through it with the learner, or mark it complete when they finish the same course elsewhere.</p></div>
+      {{FIG:academy}}
+      {{STEPS:buildcourse}}
+      <h3>Assigning and tracking</h3>
+      {{FIG:course}}
+      {{STEPS:assign}}
+      {{FIG:learners}}
+      <h3>Taking a course and earning a certificate</h3>
+      {{FIG:player}}
+      {{STEPS:certificates}}
+      <div class="note info"><b class="k">Tip</b><p>A course can count toward a business-plan step, such as “Sales certification: 2 reps”. The plan then shows how many people at that partner are certified, and the Certified people goal counts them automatically.</p></div>
+    </section>
+
+    <section class="ch" id="deals" aria-labelledby="h-deals">
+      <div class="ch-head"><span class="no">Chapter 12</span><h2 id="h-deals">Deals and touches</h2></div>
+      <div class="prose"><p>The deal page is where attribution starts. Add a touch whenever a deal was reached by an event, a campaign or an MDF-funded activity. Everything else in the hub is calculated from these touches.</p></div>
+      {{FIG:deal}}
+      {{STEPS:addtouch}}
+      {{STEPS:removetouch}}
+    </section>
+
+    <section class="ch" id="attribution" aria-labelledby="h-attribution">
+      <div class="ch-head"><span class="no">Chapter 13</span><h2 id="h-attribution">Attribution</h2></div>
+      <div class="prose"><p>Attribution answers one question: for each MDF dollar, how much pipeline came back? It shares each deal’s value among its touches using the model you choose, then rolls each share up to the campaign and the MDF behind it.</p></div>
+      {{FIG:attribution}}
+      <h3 id="models">The four models, on a real deal</h3>
+      <div class="prose"><p><b>Three Rivers Steel</b> is an $86,000 deal opened on August 13. It has two touches: a click on the Keystone LinkedIn ad program (MDF) on September 8, then the Boston executive roundtable (event) on October 2. Both trace back to the <i>Keystone DR modernization program</i> campaign. Both touches came after the deal opened, so marketing <b>influenced</b> it rather than sourced it.</p></div>
+      <div class="tw"><table>
+        <thead><tr><th>Model</th><th>How it splits credit</th><th class="r">LinkedIn ads (MDF)</th><th class="r">Boston roundtable (MDF)</th><th class="r">Campaign</th></tr></thead>
+        <tbody>
+          <tr><td><b>Linear</b></td><td>Equal share to every touch</td><td class="r">$43,000</td><td class="r">$43,000</td><td class="r">$86,000</td></tr>
+          <tr><td><b>First touch</b></td><td>All credit to the earliest touch</td><td class="r">$86,000</td><td class="r">$0</td><td class="r">$86,000</td></tr>
+          <tr><td><b>Last touch</b></td><td>All credit to the latest touch</td><td class="r">$0</td><td class="r">$86,000</td><td class="r">$86,000</td></tr>
+          <tr><td><b>U-shaped</b></td><td>40% first, 40% last, 20% across the middle (with two touches, 50/50)</td><td class="r">$43,000</td><td class="r">$43,000</td><td class="r">$86,000</td></tr>
+        </tbody></table></div>
+      <div class="note info"><b class="k">Tip</b><p>Use <b>First touch</b> when asking “what starts deals?” and <b>Linear</b> or <b>U-shaped</b> when asking “what keeps them moving?”. When a touch is on a campaign rather than a specific event or MDF line, its credit is split across that campaign’s MDF requests in proportion to their amounts.</p></div>
+      <h3 id="return">Reading return</h3>
+      <div class="prose"><ul>
+        <li><b>Return</b> = attributed pipeline ÷ MDF amount, shown as a multiple such as 16×.</li>
+        <li><span style="color:var(--ok);font-weight:700">Green</span> means at or above your target (10× unless you change it); <span style="color:var(--warn);font-weight:700">amber</span> means below.</li>
+        <li>Open and closed-won deals count toward pipeline. Closed-lost deals are excluded from pipeline figures.</li>
+        <li><b>Unattributed</b> is pipeline with no touch at all. A large figure there usually means touches are missing, not that marketing did nothing.</li>
+      </ul></div>
+      {{STEPS:qbr}}
+    </section>
+
+    <section class="ch" id="pipeline" aria-labelledby="h-pipeline">
+      <div class="ch-head"><span class="no">Chapter 14</span><h2 id="h-pipeline">Pipeline tabs</h2></div>
+      <div class="prose"><p>The Pipeline area has four tabs taken from the Pipeline Portal: <b>Deals</b>, <b>Board</b>, <b>Forecast</b> and <b>Engagement</b>. Each works on the hub’s linked records and has a link to the same view in the Portal. The partner filter at the top carries across all four tabs and the partner map. The Portal’s contact map is under <a href="#map">Partners</a>.</p></div>
+      <h3>Board</h3>
+      {{FIG:board}}
+      {{STEPS:movestage}}
+      <h3>Forecast</h3>
+      {{FIG:forecast}}
+      <div class="tw" id="stages"><table>
+        <thead><tr><th>Stage</th><th>Forecast category</th><th class="r">Win rate used for weighting</th></tr></thead>
+        <tbody>
+          <tr><td>Registered</td><td>Pipeline</td><td class="r">10%</td></tr>
+          <tr><td>Qualified</td><td>Pipeline</td><td class="r">25%</td></tr>
+          <tr><td>Proposal</td><td>Best case</td><td class="r">50%</td></tr>
+          <tr><td>Negotiation</td><td>Commit</td><td class="r">75%</td></tr>
+          <tr><td>Closed won</td><td>Won</td><td class="r">100%</td></tr>
+        </tbody></table></div>
+      {{STEPS:target}}
+      <h3>Engagement</h3>
+      {{FIG:engagement}}
+      <div class="tw" id="score"><table>
+        <thead><tr><th>Score part</th><th>What it measures</th><th class="r">Weight</th></tr></thead>
+        <tbody>
+          <tr><td>Contact recency</td><td>How recently each contact was touched. Full marks within a week, none after 90 days.</td><td class="r">30%</td></tr>
+          <tr><td>Active coverage</td><td>Share of the partner’s contacts who are active or onboarding</td><td class="r">20%</td></tr>
+          <tr><td>Activity volume</td><td>Touchpoints in the last 90 days, about two per contact for full marks</td><td class="r">20%</td></tr>
+          <tr><td>Deal registration</td><td>Deals registered in the last 90 days, three for full marks</td><td class="r">20%</td></tr>
+          <tr><td>Win rate</td><td>Won deals as a share of closed deals. Counts as 50% until the partner has closed one.</td><td class="r">10%</td></tr>
+        </tbody></table></div>
+      <div class="prose"><p>Scores of 70 and above are <b>Strong</b>, 50–69 <b>Steady</b>, 30–49 <b>Cooling</b> and under 30 <b>At risk</b>. Partners with no matched contacts show <b>No contacts</b>.</p></div>
+      {{STEPS:logtouch}}
+    </section>
+
+    <section class="ch" id="tools" aria-labelledby="h-tools">
+      <div class="ch-head"><span class="no">Chapter 15</span><h2 id="h-tools">Tools directory</h2></div>
+      <div class="prose"><p>Every partner-related artifact you have, grouped by job: deal and contact sources, account research, and your daily brief.</p></div>
+      {{FIG:tools}}
+      <h3 id="settings">Program settings</h3>
+      <div class="prose"><p>Open <b>Program settings</b> from Home or the MDF page.</p></div>
+      {{FIG:settings}}
+    </section>
+
+    <section class="ch" id="routines" aria-labelledby="h-routines">
+      <div class="ch-head"><span class="no">Chapter 16</span><h2 id="h-routines">Weekly routines</h2></div>
+      <div class="prose"><p>A suggested rhythm. Fifteen minutes a day keeps attribution honest, which keeps the QBR numbers easy.</p></div>
+      <div class="cols3">
+        <div class="card"><h4>Every morning</h4><ul><li>Home: clear red items in <b>Needs attention</b> first</li><li>Decide on any MDF requests and deal registrations waiting</li><li>Route new leads and chase partners past their answer window</li><li>Add touches for yesterday’s events and calls</li></ul></div>
+        <div class="card"><h4>Every Monday</h4><ul><li>Pipeline · Board: move deals that changed stage</li><li>Pipeline · Forecast: check commit against target</li><li>Pipeline · Engagement: contact partners in <b>Re-engage</b></li></ul></div>
+        <div class="card"><h4>Month end and QBRs</h4><ul><li>MDF: filter <b>No campaign</b> and link anything left</li><li>Attribution: review return by MDF request</li><li>Reconcile reported vs attributed gaps with each partner</li><li>Business plan: tick finished onboarding steps and review goals before the QBR</li><li>Academy: chase overdue training and plan renewals for expiring certifications</li></ul></div>
+      </div>
+    </section>
+
+    <section class="ch" id="help" aria-labelledby="h-help">
+      <div class="ch-head"><span class="no">Chapter 17</span><h2 id="h-help">Troubleshooting</h2></div>
+      <div class="faqs">
+        <details class="faq"><summary>The hub says “Program data needs a signed-in view”</summary><div><p>Program data is stored with the hub on claude.ai. Open the hub while signed in to claude.ai. The Tools directory still works when you’re signed out.</p></div></details>
+        <details class="faq"><summary>“You have view access only, so this change was not saved”</summary><div><p>The person who shared the hub gave you view access. Ask them for edit access from the hub’s Share menu.</p></div></details>
+        <details class="faq"><summary>A number in the hub doesn’t match the Pipeline Portal</summary><div><p>The hub works from its own copy of deals and contacts, so changes made in the Portal since the last refresh won’t appear. Stage moves made on the hub’s Board also stay in the hub. Ask Claude to refresh the hub from the source tools.</p></div></details>
+        <details class="faq"><summary>A partner has a different name in another tool</summary><div><p>The tools were set up separately. Open the partner page and look at <b>Also listed as</b> to see the name used in each tool.</p></div></details>
+        <details class="faq"><summary>A deal says “No touch” but marketing definitely worked it</summary><div><p>Touches are added by hand. Open the deal and add the event, campaign or MDF activity that reached it (see <a href="#deals">Chapter 12</a>). The deal moves out of Unattributed straight away.</p></div></details>
+        <details class="faq"><summary>An MDF request shows “Not run yet” for return</summary><div><p>The activity hasn’t happened or hasn’t produced touches yet. Return appears once deals carry touches that trace back to it.</p></div></details>
+        <details class="faq"><summary>How do I replace the example records with my real program?</summary><div><p>Ask Claude in this project to load your real partners, MDF, campaigns, events and deals into the hub. Example records are tagged so they can be cleared in one step.</p></div></details>
+      </div>
+    </section>
+
+    <section class="ch" id="glossary" aria-labelledby="h-glossary">
+      <div class="ch-head"><span class="no">Chapter 18</span><h2 id="h-glossary">Glossary</h2></div>
+      <dl class="gloss">
+        <dt>MDF</dt><dd>Market development funds: money given to a partner to run marketing such as events, ads, content or telemarketing.</dd>
+        <dt>Touch</dt><dd>A dated record that a deal was reached by an event, a campaign or an MDF-funded activity. Touches are the basis of all attribution in the hub.</dd>
+        <dt>Attributed pipeline</dt><dd>Open and won deal value credited to marketing through touches, under the chosen model.</dd>
+        <dt>Unattributed</dt><dd>Deal value with no touch at all.</dd>
+        <dt>Sourced</dt><dd>The deal’s first touch came on or before the day the deal was created.</dd>
+        <dt>Influenced</dt><dd>Every touch on the deal came after it was created.</dd>
+        <dt>Return</dt><dd>Attributed pipeline divided by MDF spent, written as a multiple (16×).</dd>
+        <dt>Joint business plan</dt><dd>The plan you and one partner agree for a period (such as FY27): summary, onboarding steps, goals, brand guide and logos.</dd>
+        <dt>Certification</dt><dd>A credential awarded when someone completes a course that grants one, with every quiz passed. It has an ID and an expiry date.</dd>
+        <dt>Commit</dt><dd>Closed won plus deals in Negotiation.</dd>
+        <dt>Best case</dt><dd>Commit plus deals in Proposal.</dd>
+        <dt>Weighted</dt><dd>Closed won plus each open deal multiplied by its stage’s win rate.</dd>
+        <dt>Coverage</dt><dd>Open pipeline divided by the part of the quarterly target not yet won.</dd>
+        <dt>Engagement score</dt><dd>A 0–100 measure of how active a partner relationship is, built from contact recency, coverage, activity, deal registration and win rate.</dd>
+        <dt>Content stages</dt><dd>Idea, Draft, In review, Changes requested, Approved, Scheduled, Published.</dd>
+        <dt>Territory</dt><dd>The states a partner contact covers, shown on the map and the contact record.</dd>
+        <dt>Overlap</dt><dd>How your relationship with an account compares with a partner’s: Partner can introduce, Active co-sell, Bring the partner in, Expand together, Joint prospect or Whitespace.</dd>
+        <dt>Deal registration</dt><dd>A partner’s claim to a deal. Once approved, the partner is protected for a set number of days.</dd>
+        <dt>Lifecycle stage</dt><dd>Where a partner sits in its journey: Recruit, Onboard, Enable, Activate, Grow. Each stage has a four-item checklist.</dd>
+      </dl>
+      <p class="end">Partner Command Center user manual · Version 1 · October 15, 2026. Screenshots show the example program.</p>
+    </section>
+  </main>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lbTitle" hidden>
+  <div class="lb-bar"><span id="lbTitle"></span><button type="button" id="lbClose">Close</button></div>
+  <div class="lb-scroll" id="lbScroll"><img id="lbImg" alt=""></div>
+</div>
+
+<script>
+(() => {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Pair pins, outlines and notes within each figure
+  document.querySelectorAll('figure.walk').forEach(fig => {
+    const set = (k, on) => fig.querySelectorAll(`[data-k="${k}"]`).forEach(el => el.classList.toggle('on', on));
+    fig.querySelectorAll('.pin, .callouts li').forEach(el => {
+      const k = el.dataset.k;
+      el.addEventListener('mouseenter', () => set(k, true));
+      el.addEventListener('mouseleave', () => set(k, false));
+      el.addEventListener('focus', () => set(k, true));
+      el.addEventListener('blur', () => set(k, false));
+    });
+    fig.querySelectorAll('.pin').forEach(p => p.addEventListener('click', () => {
+      const k = p.dataset.k; fig.querySelectorAll('.on').forEach(x => x.classList.remove('on')); set(k, true);
+      const li = fig.querySelector(`.callouts li[data-k="${k}"]`);
+      const r = li.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > innerHeight) li.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'});
+      clearTimeout(p._t); p._t = setTimeout(() => set(k, false), 2500);
+    }));
+  });
+  // Lightbox
+  const lb = document.getElementById('lb'), img = document.getElementById('lbImg'), sc = document.getElementById('lbScroll');
+  let opener = null;
+  const close = () => { lb.hidden = true; document.body.style.overflow = ''; img.removeAttribute('src'); opener && opener.focus(); };
+  document.querySelectorAll('.zoom').forEach(b => b.addEventListener('click', () => {
+    opener = b; img.src = b.dataset.src; img.alt = b.dataset.alt; document.getElementById('lbTitle').textContent = b.dataset.alt;
+    sc.classList.toggle('phone', !!b.closest('figure.phone'));
+    lb.hidden = false; document.body.style.overflow = 'hidden'; sc.scrollTop = 0; document.getElementById('lbClose').focus();
+  }));
+  document.getElementById('lbClose').addEventListener('click', close);
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !lb.hidden) close(); });
+  // Chapter index follows your place
+  const links = [...document.querySelectorAll('#toc a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href')));
+  const mark = () => {
+    let cur = secs[0];
+    for (const s of secs) if (s && s.getBoundingClientRect().top < 140) cur = s;
+    links.forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + cur.id ? 'true' : 'false'));
+  };
+  addEventListener('scroll', () => requestAnimationFrame(mark), {passive:true}); mark();
+  document.querySelectorAll('.toc-m a').forEach(a => a.addEventListener('click', () => a.closest('details').open = false));
+  // Help links from the hub land on a specific note: scroll to it and flash it
+  const land = () => {
+    const id = location.hash.slice(1); if (!id) return;
+    const el = document.getElementById(id); if (!el) return;
+    const go = () => { el.scrollIntoView({block: el.matches('li,.task,h3,.tw') ? 'center' : 'start'}); el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+      const fig = el.closest('figure.walk'); if (fig && el.dataset.k) fig.querySelectorAll(`[data-k="${el.dataset.k}"]`).forEach(x => x.classList.add('on')); };
+    go(); setTimeout(go, 400);
+  };
+  addEventListener('hashchange', land); if (document.readyState === 'complete') land(); else addEventListener('load', land);
+})();
+</script>

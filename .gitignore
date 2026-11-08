@@ -1,0 +1,5 @@
+node_modules/
+manual/out/
+manual/shots/*.png
+manual/test.csv
+__pycache__/
