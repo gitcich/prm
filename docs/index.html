@@ -5611,4 +5611,25 @@ document.addEventListener('click', e => {
 }, true);
 </script>
 <script data-goatcounter="https://prm.goatcounter.com/count"
-        async src="//gc.zgo.at/count.js"></script></body></html>
+        async src="//gc.zgo.at/count.js"></script><script>
+// Count each hub screen as its own page in GoatCounter. Records are grouped by type
+// (all accounts count as "account") so the report shows screens, not individual records.
+(() => {
+  const screen = () => {
+    const r = decodeURIComponent(location.hash.slice(1).split('?')[0]) || 'home';
+    if (document.body.classList.contains('portalmode')) return 'partner portal';
+    if (document.querySelector(`#rail a[href="#${CSS.escape(r)}"], .subtabs a[href="#${CSS.escape(r)}"]`)) return r;
+    const kind = document.querySelector('#main .phead .kind')?.textContent.trim();
+    const area = document.querySelector('#rail a[aria-current="page"]')?.dataset.tab;
+    return kind ? kind + ' record' : area ? area + ' record' : 'other';
+  };
+  let last = '';
+  const send = () => setTimeout(() => {
+    const s = screen(); if (s === last) return; last = s;
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    window.goatcounter.count({path: location.pathname + '#' + s, title: s, event: false});
+  }, 150);
+  addEventListener('hashchange', send);
+  addEventListener('load', () => { last = screen(); });
+})();
+</script></body></html>

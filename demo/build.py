@@ -12,6 +12,28 @@ OUT = ROOT / 'docs'
 HUB_URL = 'https://claude.ai/artifact/PQatsPhYqisWaschGNrmnY'
 MANUAL_URL = 'https://claude.ai/artifact/BQqigB6NVNxADuigEhvyd4'
 STORE = 'pcc-demo-v1'
+SCREENS = r"""<script>
+// Count each hub screen as its own page in GoatCounter. Records are grouped by type
+// (all accounts count as "account") so the report shows screens, not individual records.
+(() => {
+  const screen = () => {
+    const r = decodeURIComponent(location.hash.slice(1).split('?')[0]) || 'home';
+    if (document.body.classList.contains('portalmode')) return 'partner portal';
+    if (document.querySelector(`#rail a[href="#${CSS.escape(r)}"], .subtabs a[href="#${CSS.escape(r)}"]`)) return r;
+    const kind = document.querySelector('#main .phead .kind')?.textContent.trim();
+    const area = document.querySelector('#rail a[aria-current="page"]')?.dataset.tab;
+    return kind ? kind + ' record' : area ? area + ' record' : 'other';
+  };
+  let last = '';
+  const send = () => setTimeout(() => {
+    const s = screen(); if (s === last) return; last = s;
+    if (!window.goatcounter || !window.goatcounter.count) return;
+    window.goatcounter.count({path: location.pathname + '#' + s, title: s, event: false});
+  }, 150);
+  addEventListener('hashchange', send);
+  addEventListener('load', () => { last = screen(); });
+})();
+</script>"""
 ANALYTICS = '<script data-goatcounter="https://prm.goatcounter.com/count"\n        async src="//gc.zgo.at/count.js"></script>'
 
 hub = (ROOT / 'hub' / 'index.html').read_text()
@@ -65,7 +87,7 @@ page = sub(page, "Six partners also appear in the Pipeline Portal and the Engage
 html = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
         '<meta name="description" content="A working demo of Partner Command Center: partner lifecycle, account mapping, deal registration, MDF, campaigns, events, an LMS and attribution in one hub.">'
         '<style>:root{box-sizing:border-box}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>'
-        '</head><body>' + mock + page + chrome + ANALYTICS + '</body></html>')
+        '</head><body>' + mock + page + chrome + ANALYTICS + SCREENS + '</body></html>')
 
 if OUT.exists(): shutil.rmtree(OUT)
 (OUT / 'manual' / 'shots').mkdir(parents=True)
