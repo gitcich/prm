@@ -12,6 +12,7 @@ OUT = ROOT / 'docs'
 HUB_URL = 'https://claude.ai/artifact/PQatsPhYqisWaschGNrmnY'
 MANUAL_URL = 'https://claude.ai/artifact/BQqigB6NVNxADuigEhvyd4'
 STORE = 'pcc-demo-v1'
+ANALYTICS = '<script data-goatcounter="https://prm.goatcounter.com/count"\n        async src="//gc.zgo.at/count.js"></script>'
 
 hub = (ROOT / 'hub' / 'index.html').read_text()
 seed = (ROOT / 'data' / 'sample-data.json').read_text()
@@ -64,7 +65,7 @@ page = sub(page, "Six partners also appear in the Pipeline Portal and the Engage
 html = ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
         '<meta name="description" content="A working demo of Partner Command Center: partner lifecycle, account mapping, deal registration, MDF, campaigns, events, an LMS and attribution in one hub.">'
         '<style>:root{box-sizing:border-box}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>'
-        '</head><body>' + mock + page + chrome + '</body></html>')
+        '</head><body>' + mock + page + chrome + ANALYTICS + '</body></html>')
 
 if OUT.exists(): shutil.rmtree(OUT)
 (OUT / 'manual' / 'shots').mkdir(parents=True)
@@ -72,6 +73,7 @@ if OUT.exists(): shutil.rmtree(OUT)
 man = (ROOT / 'manual' / 'index.html').read_text()
 man = man.replace(HUB_URL, '../')
 man = re.sub(r'https://claude\.ai/code/artifact/[0-9a-f-]+', '../#tools', man)
+man = man.replace('</body>', ANALYTICS + '\n</body>', 1) if '</body>' in man else man + ANALYTICS
 (OUT / 'manual' / 'index.html').write_text(man)
 for f in (ROOT / 'manual' / 'shots').glob('*.webp'): shutil.copy(f, OUT / 'manual' / 'shots' / f.name)
 (OUT / '.nojekyll').write_text('')
